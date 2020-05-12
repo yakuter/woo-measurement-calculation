@@ -11,6 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+add_action( 'get_header', 'remove_storefront_sidebar' );
+function remove_storefront_sidebar() {
+	if ( is_woocommerce() ) {
+		remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
+	}
+}
+
 // ADD TO CART CUSTOM FIELDS
 add_action( 'woocommerce_before_add_to_cart_button', 'output_add_to_cart_custom_fields', 10 );
 function output_add_to_cart_custom_fields() {
