@@ -122,19 +122,11 @@ add_filter( 'woocommerce_add_cart_item_data', 'iconic_add_custom_fields_text_to_
 function iconic_add_custom_fields_text_to_cart_item( $cart_item_data, $product_id, $variation_id ) {
 	$custom_fields = array(
 		array(
-			'label' => 'Area',
+			'label' => 'Area SQM',
 			'key' => 'sqm_area',
 			'type' => 'number',
 			'classlist' => 'small-6',
 			'min' => 1,
-			'required' => true,
-		),
-		array(
-			'label' => 'Quantity',
-			'key' => 'sqm_quantity',
-			'type' => 'number',
-			'classlist' => 'small-6',
-			'min' => 0,
 			'required' => true,
 		),
 	);
@@ -153,43 +145,16 @@ function iconic_add_custom_fields_text_to_cart_item( $cart_item_data, $product_i
 	return $cart_item_data;
 }
 
-
-// ADD total_price_data TO CART ITEM
-add_filter( 'woocommerce_add_cart_item_data', 'save_custom_product_field_in_cart', 10, 2 );
-function save_custom_product_field_in_cart( $cart_item_data, $product_id ) {
-    if( isset( $_POST['total_price_data'] ) )
-        $cart_item_data[ 'total_price_data' ] = sanitize_text_field($_POST['total_price_data']);
-
-    return $cart_item_data;
-}
-
-
-// SET PRICE WITH TOTAL PRICE DATA
-add_action( 'woocommerce_before_calculate_totals', 'add_custom_price' );
-function add_custom_price( $cart_object ) {
-    foreach ( $cart_object->cart_contents as $key => $value ) {
-		$value['data']->set_price($value['total_price_data']);
-	}
-}
-
 // GET CUSTOM ITEMS FOR CART 
 add_filter( 'woocommerce_get_item_data', 'iconic_display_custom_fields_text_cart', 10, 2 );
 function iconic_display_custom_fields_text_cart( $item_data, $cart_item ) {
 	$custom_fields = array(
 		array(
-			'label' => 'Area',
+			'label' => 'Area SQM',
 			'key' => 'sqm_area',
 			'type' => 'number',
 			'classlist' => 'small-6',
 			'min' => 1,
-			'required' => true,
-		),
-		array(
-			'label' => 'Quantity',
-			'key' => 'sqm_quantity',
-			'type' => 'number',
-			'classlist' => 'small-6',
-			'min' => 0,
 			'required' => true,
 		),
 	);
@@ -225,6 +190,16 @@ function iconic_add_custom_fields_text_to_order_items( $item, $cart_item_key, $v
 		}
 
 	endforeach;
+}
+
+
+// DISABLE UPDATE QUANTITY
+add_filter( 'woocommerce_cart_item_quantity', 'wc_cart_item_quantity', 10, 3 );
+function wc_cart_item_quantity( $product_quantity, $cart_item_key, $cart_item ){
+    if( is_cart() ){
+        $product_quantity = sprintf( '%2$s <input type="hidden" name="cart[%1$s][qty]" value="%2$s" />', $cart_item_key, $cart_item['quantity'] );
+    }
+    return $product_quantity;
 }
 
 

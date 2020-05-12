@@ -45,10 +45,6 @@
     font-size: 30px;
 }
 
-.woocommerce table.cart td:nth-of-type(5), .woocommerce table.cart th:nth-of-type(5) {
-display: none;
-} 
-
 @media screen and (max-width: 1081px) {
     #price_calculator span.wc-measurement-price-calculator-input-help {
         position: absolute;
