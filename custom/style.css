@@ -1,0 +1,56 @@
+/**
+ * Add any custom CSS here.
+ *
+ * This file will be loaded after all other theme stylesheets.
+ */
+
+ #price_calculator {
+    border-style:none;
+}
+
+#price_calculator td {
+    border-style: none;
+    vertical-align: top;
+}
+
+#price_calculator input, #price_calculator span {
+    float: right;
+}
+
+#price_calculator input {
+    text-align: right;
+    width: 84px;
+}
+
+.variable_price_calculator {
+    display: none;
+}
+
+#price_calculator .calculate td {
+    text-align: right;
+}
+
+#price_calculator .calculate button {
+    margin-right: 0;
+}
+
+#price_calculator span.wc-measurement-price-calculator-input-help {
+    display: inline-block;
+    float: none;
+    margin: 0 8px;
+    vertical-align: middle;
+}
+
+#price_calculator span.amount {
+    font-size: 30px;
+}
+
+.woocommerce table.cart td:nth-of-type(5), .woocommerce table.cart th:nth-of-type(5) {
+display: none;
+} 
+
+@media screen and (max-width: 1081px) {
+    #price_calculator span.wc-measurement-price-calculator-input-help {
+        position: absolute;
+    }
+}
