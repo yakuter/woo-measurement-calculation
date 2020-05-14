@@ -27,11 +27,20 @@ function output_add_to_cart_custom_fields() {
 		array(
 			'label' => 'Area SQM',
 			'key' => 'sqm_area',
-			'type' => 'text',
+			'type' => 'number',
 			'classlist' => 'small-6',
 			'min' => 1,
 			'required' => true,
-			'step' => ".01",
+			'step' => "1",
+		),
+		array(
+			'label' => 'Quantity (Individual Pavers)',
+			'key' => 'sqm_quantity',
+			'type' => 'number',
+			'classlist' => 'small-6',
+			'min' => 1,
+			'required' => true,
+			'step' => "1",
 		),
 	);
 ?>
@@ -59,10 +68,10 @@ function output_add_to_cart_custom_fields() {
 			$currency = get_woocommerce_currency();
 			$base_area = $length * $width;
 		?>
-			<tr class="price-table-row length-input">
+			<!-- <tr class="price-table-row length-input">
 				<td><label for="sqm_wastage">Add 10% for cuts and wastage</label></td>
 				<td style="text-align:right;"><input type="checkbox" id="sqm_wastage" name="sqm_wastage"></td>
-			</tr>
+			</tr> -->
 			
 		<tr class="price-table-row calculated-price">
 			<td>Total Price</td>
@@ -71,7 +80,6 @@ function output_add_to_cart_custom_fields() {
 				<span class="total_price">
 				<span class="amount">&pound;<span class="t_price"><?php echo $price; ?></span></span>
 				</span>
-				<input type="hidden" name="total_price_data" value="<?php echo $price; ?>">
 			</td>
 		</tr>
     </tbody>
@@ -90,34 +98,50 @@ function output_add_to_cart_custom_fields() {
 		var b  = 'span.total_price span.amount span.t_price',
 			area = 'input[name="sqm_area"]',
 			quantity = 'input[name="quantity"]',
+			sqm_quantity = 'input[name="sqm_quantity"]',
 			click = 'input#sqm_wastage',
 			base_area = <?php echo $base_area; ?>,
 			p1 = <?php echo $price; ?>;
 
         $(area).on( 'change', function(){
 			var hesap = $(area).val() / base_area;
-			if ($(click).is(':checked')) {
-				var hesap = hesap * 1.1;
-			}
-			$(quantity).val( parseFloat(Math.floor(hesap)));			
+			$(quantity).val( parseFloat(Math.floor(hesap)));
+			$(sqm_quantity).val( parseFloat(Math.floor(hesap)));			
 			$(b).html( parseFloat( $(quantity).val() * p1 ).toFixed(2) );
 		});
 
 		$(quantity).on( 'change', function(){
+			$(sqm_quantity).val($(quantity).val());			
 			$(area).val(
 				parseFloat( $(quantity).val() * base_area )
 				.toFixed(2)
 			);
 		});
-		
-		$(click).on( 'change', function(){
-			var hesap = $(area).val() / base_area;
-			if ($(click).is(':checked')) {
-				var hesap = hesap * 1.1;
-			}
-			$(quantity).val( parseFloat(Math.floor(hesap)));			
+
+		$(sqm_quantity).on( 'change', function(){
+			$(quantity).val($(sqm_quantity).val());			
+			$(area).val(
+				parseFloat( $(sqm_quantity).val() * base_area )
+				.toFixed(2)
+			);
 			$(b).html( parseFloat( $(quantity).val() * p1 ).toFixed(2) );
-        });
+		});
+		
+		/* $(click).on( 'change', function(){	
+			var hesap = $(area).val() / base_area;
+			var hesap_plus = hesap * 1.1;
+			if ($(click).is(':checked')) {
+				var value = parseFloat(Math.floor(hesap_plus));
+				$(b).html( parseFloat( value * p1 ).toFixed(2) );
+			} 
+			
+			else 
+			
+			{
+				var value = parseFloat(Math.floor(hesap));
+				$(b).html( parseFloat( value * p1 ).toFixed(2) );
+			}
+        }); */
 
     });
     </script>

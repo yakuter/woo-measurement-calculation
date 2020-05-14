@@ -55,3 +55,7 @@ body.woocommerce #primary {
         position: absolute;
     }
 }
+
+input[name="quantity"] {
+    display: none;
+}
