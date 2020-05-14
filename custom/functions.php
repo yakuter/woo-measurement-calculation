@@ -78,7 +78,7 @@ function output_add_to_cart_custom_fields() {
 
 			<td>
 				<span class="total_price">
-				<span class="amount">&pound;<span class="t_price"><?php echo $price; ?></span></span>
+				<span class="amount">&pound;<span class="t_price">0</span></span>
 				</span>
 			</td>
 		</tr>
@@ -225,7 +225,7 @@ function iconic_add_custom_fields_text_to_order_items( $item, $cart_item_key, $v
 
 
 // DISABLE UPDATE QUANTITY
-add_filter( 'woocommerce_cart_item_quantity', 'wc_cart_item_quantity', 10, 3 );
+// add_filter( 'woocommerce_cart_item_quantity', 'wc_cart_item_quantity', 10, 3 );
 function wc_cart_item_quantity( $product_quantity, $cart_item_key, $cart_item ){
     if( is_cart() ){
         $product_quantity = sprintf( '%2$s <input type="hidden" name="cart[%1$s][qty]" value="%2$s" />', $cart_item_key, $cart_item['quantity'] );
@@ -236,21 +236,48 @@ function wc_cart_item_quantity( $product_quantity, $cart_item_key, $cart_item ){
 
 // SHIPPING ******************** */
 
-add_filter( 'woocommerce_package_rates', 'wc_ninja_find_all_available_shipping_rates', 998, 2 );
-function wc_ninja_find_all_available_shipping_rates( $rates, $package ) {
-	
-	foreach ( $rates as $id => $rate ) {
-		
-		// echo $id . ' ';
-	}
-
-    return $rates;
-}
-
-add_filter( 'woocommerce_package_rates', 'wc_ninja_change_flat_rates_cost', 10, 2 );
+add_filter( 'woocommerce_package_rates', 'wc_ninja_change_flat_rates_cost', 999, 2 );
 function wc_ninja_change_flat_rates_cost( $rates, $package ) {
 
+var_dump($rates);
 
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+	return;
+
+	/* $box20 = 19;
+	$box26 = 20;
+	$box32 = 21;
+	$box40 = 22; */
+
+	$box20 = 127;
+	$box26 = 146;
+	$box32 = 147;
+	$box40 = 148;
+
+	$flat_rate_id = 'flat_rate:5';
+
+	// Checking in cart items
+    foreach( $package['contents'] as $item ){
+
+        if( $item['data']->get_shipping_class_id() == $box20 ){
+			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/20);
+		}
+
+		if( $item['data']->get_shipping_class_id() == $box26 ){
+			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/26);
+		}
+
+		if( $item['data']->get_shipping_class_id() == $box32 ){
+			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/32);
+		}
+
+		if( $item['data']->get_shipping_class_id() == $box40 ){
+			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/40);
+		}
+		
+    }
+
+/* 
 	// Make sure flat rate is available
 	if ( isset( $rates['flat_rate:1'] ) ) {
 		// Number of products in the cart
@@ -261,7 +288,7 @@ function wc_ninja_change_flat_rates_cost( $rates, $package ) {
 			
 			$rates['flat_rate:1']->cost = $rates['flat_rate:1']->cost + 22;
 		// }
-	}
+	} */
 
 	return $rates;
 }
@@ -270,7 +297,7 @@ function wc_ninja_change_flat_rates_cost( $rates, $package ) {
 
 
 
-add_filter('woocommerce_checkout_update_order_review', 'clear_wc_shipping_rates_cache');
+/* add_filter('woocommerce_checkout_update_order_review', 'clear_wc_shipping_rates_cache');
 function clear_wc_shipping_rates_cache(){
     $packages = WC()->cart->get_shipping_packages();
 
@@ -279,7 +306,7 @@ function clear_wc_shipping_rates_cache(){
 
         unset(WC()->session->$shipping_session);
     }
-}
+} */
 
 
 
