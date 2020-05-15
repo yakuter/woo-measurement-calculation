@@ -11,12 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-add_action( 'get_header', 'remove_storefront_sidebar' );
-function remove_storefront_sidebar() {
-	if ( is_woocommerce() ) {
-		remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
-	}
-}
+// add_action( 'get_header', 'remove_storefront_sidebar' );
+// function remove_storefront_sidebar() {
+// 	if ( is_woocommerce() ) {
+// 		remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
+// 	}
+// }
 
 // ADD TO CART CUSTOM FIELDS
 add_action( 'woocommerce_before_add_to_cart_button', 'output_add_to_cart_custom_fields', 10 );
@@ -31,7 +31,8 @@ function output_add_to_cart_custom_fields() {
 			'classlist' => 'small-6',
 			'min' => 1,
 			'required' => true,
-			'step' => "1",
+			'step' => ".01",
+			'value' => "1",
 		),
 		array(
 			'label' => 'Quantity (Individual Pavers)',
@@ -41,6 +42,7 @@ function output_add_to_cart_custom_fields() {
 			'min' => 1,
 			'required' => true,
 			'step' => "1",
+			'value' => "",
 		),
 	);
 ?>
@@ -55,7 +57,17 @@ function output_add_to_cart_custom_fields() {
 
 			<tr class="price-table-row length-input">
 				<td><label for="length_needed"><?php _e( $cf->label, 'atn' ); ?></label></td>
-				<td style="text-align:right;"><input type="<?php echo $cf->type ?>" id="<?php echo $cf->key ?>" name="<?php echo $cf->key ?>" <?php if($cf->required) echo 'required="' . $cf->required . '"'; ?> <?php if($cf->min) echo 'required="' . $cf->min . '"'; ?> step="<?php echo $cf->step ?>"></td>
+				<td style="text-align:right;">
+					<input 
+						type="<?php echo $cf->type ?>" 
+						id="<?php echo $cf->key ?>" 
+						name="<?php echo $cf->key ?>" 
+						<?php if($cf->required) echo 'required="' . $cf->required . '"'; ?> 
+						<?php if($cf->min) echo 'min="' . $cf->min . '"'; ?> 
+						step="<?php echo $cf->step ?>" 
+						value="<?php echo $cf->value ?>"
+					>
+					</td>
 			</tr>
 
 		<?php
@@ -94,6 +106,18 @@ function output_add_to_cart_custom_fields() {
 			return false;
 		}
 		});
+
+		$(function(){
+			$(area).trigger( 'change');
+		});
+		
+		// var hesap = $(area).val() / base_area;
+		// $(quantity).val( parseFloat(Math.floor(hesap)));
+		// $(sqm_quantity).val( parseFloat(Math.floor(hesap)));			
+		// $(b).html( parseFloat( $(quantity).val() * p1 ).toFixed(2) );
+
+		
+		
 
 		var b  = 'span.total_price span.amount span.t_price',
 			area = 'input[name="sqm_area"]',
@@ -225,7 +249,7 @@ function iconic_add_custom_fields_text_to_order_items( $item, $cart_item_key, $v
 
 
 // DISABLE UPDATE QUANTITY
-// add_filter( 'woocommerce_cart_item_quantity', 'wc_cart_item_quantity', 10, 3 );
+add_filter( 'woocommerce_cart_item_quantity', 'wc_cart_item_quantity', 10, 3 );
 function wc_cart_item_quantity( $product_quantity, $cart_item_key, $cart_item ){
     if( is_cart() ){
         $product_quantity = sprintf( '%2$s <input type="hidden" name="cart[%1$s][qty]" value="%2$s" />', $cart_item_key, $cart_item['quantity'] );
@@ -235,11 +259,8 @@ function wc_cart_item_quantity( $product_quantity, $cart_item_key, $cart_item ){
 
 
 // SHIPPING ******************** */
-
 add_filter( 'woocommerce_package_rates', 'wc_ninja_change_flat_rates_cost', 999, 2 );
 function wc_ninja_change_flat_rates_cost( $rates, $package ) {
-
-var_dump($rates);
 
 	if ( is_admin() && ! defined( 'DOING_AJAX' ) )
 	return;
@@ -254,28 +275,57 @@ var_dump($rates);
 	$box32 = 147;
 	$box40 = 148;
 
-	$flat_rate_id = 'flat_rate:5';
+	$flat_rate_id = '';
+	// Group A
+	if ( isset( $rates['flat_rate:17'] ) ) {
+		$flat_rate_id = 'flat_rate:17';
+	}
 
-	// Checking in cart items
-    foreach( $package['contents'] as $item ){
+	if ( isset( $rates['flat_rate:18'] ) ) {
+		$flat_rate_id = 'flat_rate:18';
+	}
 
-        if( $item['data']->get_shipping_class_id() == $box20 ){
-			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/20);
+	if ( isset( $rates['flat_rate:19'] ) ) {
+		$flat_rate_id = 'flat_rate:19';
+	}
+
+	if ( isset( $rates['flat_rate:20'] ) ) {
+		$flat_rate_id = 'flat_rate:20';
+	}
+
+	if ( isset( $rates['flat_rate:21'] ) ) {
+		$flat_rate_id = 'flat_rate:21';
+	}
+
+	if ( isset( $rates[$flat_rate_id] ) ) {
+
+		// Checking in cart items
+		foreach( $package['contents'] as $item ){
+
+			if( $item['data']->get_shipping_class_id() == $box20 ){
+				$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/20);
+			}
+	
+			if( $item['data']->get_shipping_class_id() == $box26 ){
+				$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/26);
+			}
+	
+			if( $item['data']->get_shipping_class_id() == $box32 ){
+				$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/32);
+			}
+	
+			if( $item['data']->get_shipping_class_id() == $box40 ){
+				$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/40);
+			}
+			
 		}
 
-		if( $item['data']->get_shipping_class_id() == $box26 ){
-			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/26);
-		}
+	}
 
-		if( $item['data']->get_shipping_class_id() == $box32 ){
-			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/32);
-		}
+	return $rates;
+}
 
-		if( $item['data']->get_shipping_class_id() == $box40 ){
-			$rates[$flat_rate_id]->cost = $rates[$flat_rate_id]->cost * ceil($item['quantity']/40);
-		}
-		
-    }
+	
 
 /* 
 	// Make sure flat rate is available
@@ -289,11 +339,6 @@ var_dump($rates);
 			$rates['flat_rate:1']->cost = $rates['flat_rate:1']->cost + 22;
 		// }
 	} */
-
-	return $rates;
-}
-
-
 
 
 

@@ -45,10 +45,10 @@
     font-size: 30px;
 }
 
-body.woocommerce #primary {
+/* body.woocommerce #primary {
 	float: none;
 	width: 100%;
-}
+} */
 
 @media screen and (max-width: 1081px) {
     #price_calculator span.wc-measurement-price-calculator-input-help {
